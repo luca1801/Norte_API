@@ -8,7 +8,6 @@ from core.database import init_db
 from core.logger import get_logger
 from routes import auth, bags, equipment, events, reports, reservations, transactions, users
 
-# .\venv\Scripts\python.exe main.py
 logger = get_logger(__name__)
 
 
