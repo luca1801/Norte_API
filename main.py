@@ -23,6 +23,7 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down API...")
 
 
+# teste
 # Create FastAPI application
 app = FastAPI(
     title=settings.API_TITLE,
