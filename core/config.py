@@ -5,27 +5,25 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # API Info
-    API_TITLE: str = "api_norte"
-    API_VERSION: str = "1.0.0"
-    API_DESCRIPTION: str = "Asset Management API"
+    API_TITLE: str
+    API_VERSION: str
+    API_DESCRIPTION: str
 
     # Server
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    HOST: str
+    PORT: int
 
     # Database
-    DATABASE_URL: str = "sqlite:///./api_norte.db"
+    DATABASE_URL: str
 
     # Security
     SECRET_KEY: str
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours for development
-
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
-
+    CORS_ORIGINS: str
     # Logging
-    LOG_LEVEL: str = "INFO"
+    LOG_LEVEL: str
 
     # Timezone
     TIMEZONE: str = "America/Sao_Paulo"
