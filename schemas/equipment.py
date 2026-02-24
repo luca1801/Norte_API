@@ -55,6 +55,7 @@ class EquipmentInDB(EquipmentBase):
 
     id: str
     status: EquipmentStatus
+    current_event_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

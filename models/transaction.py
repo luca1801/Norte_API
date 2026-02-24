@@ -30,13 +30,14 @@ class Transaction(Base):
     user_id = Column(
         String(36), ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
     )
-    transaction_type = Column(Enum(TransactionType), nullable=False, index=True)
+    transaction_type = Column(Enum(TransactionType, values_callable=lambda x: [e.value for e in x]), nullable=False, index=True)
     status = Column(
-        Enum(TransactionStatus), nullable=False, default=TransactionStatus.PENDING, index=True
+        Enum(TransactionStatus, values_callable=lambda x: [e.value for e in x]), nullable=False, default=TransactionStatus.PENDING, index=True
     )
     scheduled_date = Column(DateTime(timezone=True), nullable=False, index=True)
     actual_date = Column(DateTime(timezone=True), nullable=True, index=True)
     notes = Column(Text, nullable=True)
+    return_condition = Column(String(50), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False

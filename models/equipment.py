@@ -24,12 +24,13 @@ class Equipment(Base):
     serial = Column(String(100), unique=True, index=True, nullable=True)
     qr_code = Column(String(100), unique=True, index=True, nullable=True)
     status = Column(
-        Enum(EquipmentStatus), nullable=False, default=EquipmentStatus.AVAILABLE, index=True
+        Enum(EquipmentStatus, values_callable=lambda x: [e.value for e in x]), nullable=False, default=EquipmentStatus.AVAILABLE, index=True
     )
-    condition = Column(Enum(EquipmentCondition), nullable=False, default=EquipmentCondition.GOOD)
+    condition = Column(Enum(EquipmentCondition, values_callable=lambda x: [e.value for e in x]), nullable=False, default=EquipmentCondition.GOOD)
     bag_id = Column(
         String(36), ForeignKey("bags.id", ondelete="SET NULL"), index=True, nullable=True
     )
+    current_event_id = Column(String(36), ForeignKey("events.id", ondelete="SET NULL"), nullable=True, index=True)
     location = Column(String(255), nullable=True)
     description = Column(Text, nullable=True)
     image = Column(String(500), nullable=True)

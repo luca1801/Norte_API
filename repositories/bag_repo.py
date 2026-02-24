@@ -59,6 +59,7 @@ class BagRepository(BaseRepository[Bag]):
                 "name": bag.name,
                 "description": bag.description,
                 "status": bag.status,
+                "current_event_id": bag.current_event_id,
                 "is_active": bag.is_active,
                 "created_at": bag.created_at,
                 "updated_at": bag.updated_at,

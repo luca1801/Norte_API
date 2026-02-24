@@ -22,7 +22,7 @@ class Event(Base):
     name = Column(String(255), nullable=False)
     type = Column(String(50), nullable=False)  # concert, conference, wedding, etc.
     category = Column(String(100), nullable=True)
-    status = Column(Enum(EventStatus), nullable=False, default=EventStatus.PLANNED, index=True)
+    status = Column(Enum(EventStatus, values_callable=lambda x: [e.value for e in x]), nullable=False, default=EventStatus.PLANNED, index=True)
     start_date = Column(DateTime(timezone=True), nullable=False, index=True)
     end_date = Column(DateTime(timezone=True), nullable=False, index=True)
     owner_id = Column(

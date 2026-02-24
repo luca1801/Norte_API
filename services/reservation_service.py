@@ -60,11 +60,14 @@ class ReservationService:
 
         if equipment:
             equipment.status = EquipmentStatus.RESERVED
+            equipment.current_event_id = reservation_data.event_id
         if bag:
             bag.status = BagStatus.RESERVED
+            bag.current_event_id = reservation_data.event_id
             bag_equipment = self.equipment_repo.list_by_bag(bag.id)
             for eq in bag_equipment:
                 eq.status = EquipmentStatus.RESERVED
+                eq.current_event_id = reservation_data.event_id
 
         self.reservation_repo.commit()
         self.reservation_repo.refresh(new_reservation)
@@ -143,14 +146,17 @@ class ReservationService:
             equipment = self.equipment_repo.get_by_id(reservation.equipment_id)
             if equipment:
                 equipment.status = EquipmentStatus.AVAILABLE
+                equipment.current_event_id = None
 
         if reservation.bag_id:
             bag = self.bag_repo.get_by_id(reservation.bag_id)
             if bag:
                 bag.status = BagStatus.AVAILABLE
+                bag.current_event_id = None
                 bag_equipment = self.equipment_repo.list_by_bag(bag.id)
                 for eq in bag_equipment:
                     eq.status = EquipmentStatus.AVAILABLE
+                    eq.current_event_id = None
 
     def cancel(self, reservation_id: str) -> None:
         logger.info(f"Cancelling reservation ID: {reservation_id}")

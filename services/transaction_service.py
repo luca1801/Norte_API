@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from core.logger import get_logger
-from enums import BagStatus, EquipmentStatus, EventStatus, TransactionStatus, TransactionType
+from enums import BagStatus, EquipmentCondition, EquipmentStatus, EventStatus, TransactionStatus, TransactionType
 from models.bag import Bag
 from models.equipment import Equipment
 from models.event import Event
@@ -127,8 +127,23 @@ class TransactionService:
         old_status = equipment.status.value
         if transaction_data.transaction_type == TransactionType.WITHDRAWAL:
             equipment.status = EquipmentStatus.IN_USE
+            equipment.current_event_id = transaction_data.event_id
         elif transaction_data.transaction_type == TransactionType.RETURN:
-            equipment.status = EquipmentStatus.AVAILABLE
+            return_condition = getattr(transaction_data, 'return_condition', None) or 'ok'
+            
+            if return_condition == 'ok':
+                equipment.status = EquipmentStatus.AVAILABLE
+                equipment.current_event_id = None
+            elif return_condition == 'damaged':
+                equipment.status = EquipmentStatus.MAINTENANCE
+                equipment.condition = EquipmentCondition.DAMAGED
+                equipment.current_event_id = None
+            elif return_condition == 'maintenance':
+                equipment.status = EquipmentStatus.MAINTENANCE
+                equipment.current_event_id = None
+            elif return_condition == 'lost':
+                equipment.status = EquipmentStatus.EXCLUDED
+                equipment.current_event_id = None
 
         audit_equipment_status_change(
             db=self.db,
@@ -140,12 +155,16 @@ class TransactionService:
         )
 
     def _handle_bag_transaction(self, transaction_data: TransactionCreate, bag: Bag, current_user: User, client_ip: Optional[str]) -> None:
+        return_condition = getattr(transaction_data, 'return_condition', None) or 'ok'
+        
         if transaction_data.transaction_type == TransactionType.WITHDRAWAL:
             bag.status = BagStatus.IN_USE
+            bag.current_event_id = transaction_data.event_id
             for equip in bag.equipment_items:
                 if equip.status in [EquipmentStatus.AVAILABLE, EquipmentStatus.RESERVED]:
                     old_equip_status = equip.status.value
                     equip.status = EquipmentStatus.IN_USE
+                    equip.current_event_id = transaction_data.event_id
                     audit_equipment_status_change(
                         db=self.db,
                         equipment=equip,
@@ -156,10 +175,27 @@ class TransactionService:
                     )
         elif transaction_data.transaction_type == TransactionType.RETURN:
             bag.status = BagStatus.AVAILABLE
+            bag.current_event_id = None
             for equip in bag.equipment_items:
-                if equip.status == EquipmentStatus.IN_USE:
+                if equip.status in [EquipmentStatus.IN_USE, EquipmentStatus.RESERVED]:
                     old_equip_status = equip.status.value
-                    equip.status = EquipmentStatus.AVAILABLE
+                    
+                    if equip.status == EquipmentStatus.RESERVED:
+                        equip.status = EquipmentStatus.RESERVED
+                    elif return_condition == 'ok':
+                        equip.status = EquipmentStatus.AVAILABLE
+                        equip.current_event_id = None
+                    elif return_condition == 'damaged':
+                        equip.status = EquipmentStatus.MAINTENANCE
+                        equip.condition = EquipmentCondition.DAMAGED
+                        equip.current_event_id = None
+                    elif return_condition == 'maintenance':
+                        equip.status = EquipmentStatus.MAINTENANCE
+                        equip.current_event_id = None
+                    elif return_condition == 'lost':
+                        equip.status = EquipmentStatus.EXCLUDED
+                        equip.current_event_id = None
+                    
                     audit_equipment_status_change(
                         db=self.db,
                         equipment=equip,

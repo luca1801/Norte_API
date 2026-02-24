@@ -25,6 +25,7 @@ class TransactionBase(BaseModel):
     transaction_type: TransactionType
     scheduled_date: datetime
     notes: Optional[str] = None
+    return_condition: Optional[str] = None
 
     @field_validator("bag_id")
     @classmethod

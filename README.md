@@ -213,7 +213,7 @@ Authorization: Bearer <your_token>
 Some endpoints require admin role:
 - User management (list, get, update, delete users)
 
-Default admin user: `admin` / `admin`
+Default admin user: `lucas` / `admin`
 
 ## Notes
 

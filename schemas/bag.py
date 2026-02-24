@@ -41,6 +41,7 @@ class BagInDB(BagBase):
 
     id: str
     status: BagStatus
+    current_event_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

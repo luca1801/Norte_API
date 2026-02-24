@@ -33,7 +33,7 @@ class Reservation(Base):
     start_date = Column(DateTime(timezone=True), nullable=False, index=True)
     end_date = Column(DateTime(timezone=True), nullable=False, index=True)
     status = Column(
-        Enum(ReservationStatus), nullable=False, default=ReservationStatus.ACTIVE, index=True
+        Enum(ReservationStatus, values_callable=lambda x: [e.value for e in x]), nullable=False, default=ReservationStatus.ACTIVE, index=True
     )
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
